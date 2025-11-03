@@ -66,6 +66,43 @@ The `validationFailureAction` field in Kyverno policies determines **how the pol
 
 ---
 
+### 🧠 Key Kyverno Features
+
+Kyverno provides a powerful, Kubernetes-native way to **govern your cluster configuration, security, and compliance** — all through declarative YAML policies.
+
+| Feature | Description |
+|------------------------------|--------------|
+| ✅ **Policy as Code (YAML)** | Write policies just like standard Kubernetes manifests |
+| 🔄 **Admission Control** | Validate or mutate live API requests before they’re persisted |
+| 🕵️‍♀️ **Background Scanning** | Continuously checks existing resources for policy compliance |
+| 🧬 **Auto Remediation** | Automatically fixes or generates missing resources |
+| 📊 **Policy Reports** | Produces compliance reports via CRDs like `PolicyReport` |
+| 🔐 **Pod Security Enforcement** | Easily apply Pod Security Standards (PSP-like controls) |
+| 💾 **GitOps Friendly** | Fully compatible with ArgoCD and Flux for declarative policy management |
+
+---
+
+### 🧰 Real-World Use Cases
+
+| Use Case | Example Policy |
+|-----------|----------------|
+| **Security Hardening** | Enforce non-root or non-privileged containers |
+| **Compliance** | Require mandatory labels such as `team` or `environment` |
+| **Networking** | Automatically generate a `NetworkPolicy` in each namespace |
+| **Resource Management** | Apply default `LimitRange` or `ResourceQuota` settings |
+| **Governance** | Block usage of disallowed image tags (e.g., `:latest`) |
+
+---
+
+### 🚀 Why Kyverno?
+
+- 🧩 Native to Kubernetes — no external policy language needed  
+- 🔐 Strengthens security posture through declarative guardrails  
+- 📈 Enhances visibility and compliance with detailed reports  
+- 💡 Simplifies cluster governance for DevOps and platform teams  
+
+---
+
 ### 🚀 Learn More
 
 - [Kyverno Official Docs](https://kyverno.io/docs/)
