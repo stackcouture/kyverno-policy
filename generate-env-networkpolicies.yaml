@@ -1,0 +1,110 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: generate-env-specific-networkpolicies
+spec:
+  generateExisting: true
+  validationFailureAction: Enforce
+  rules:
+
+    # ===========================================================
+    # Generate policy for DEV namespaces (env=dev)
+    # ===========================================================
+    - name: generate-dev-networkpolicy
+      match:
+        resources:
+          kinds:
+            - Namespace
+          selector:
+            matchLabels:
+              env: dev
+      generate:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: "np-dev-allow-all"
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        data:
+          apiVersion: networking.k8s.io/v1
+          kind: NetworkPolicy
+          metadata:
+            name: "np-dev-allow-all"
+            labels:
+              created-by: kyverno
+              env: dev
+          spec:
+            podSelector: {}
+            policyTypes:
+              - Ingress
+              - Egress
+            ingress:
+              - {}   # Allow all
+            egress:
+              - {}   # Allow all
+
+    # ===========================================================
+    # Generate policy for TEST namespaces (env=test)
+    # ===========================================================
+    - name: generate-test-networkpolicy
+      match:
+        resources:
+          kinds:
+            - Namespace
+          selector:
+            matchLabels:
+              env: test
+      generate:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: "np-test-allow-same-ns"
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        data:
+          apiVersion: networking.k8s.io/v1
+          kind: NetworkPolicy
+          metadata:
+            name: "np-test-allow-same-ns"
+            labels:
+              created-by: kyverno
+              env: test
+          spec:
+            podSelector: {}
+            policyTypes:
+              - Ingress
+              - Egress
+            ingress:
+              - from:
+                  - podSelector: {}  # Only from same namespace
+            egress:
+              - {}  # Allow all egress (to Internet, external APIs)
+
+    # ===========================================================
+    # Generate policy for PROD namespaces (env=prod)
+    # ===========================================================
+    - name: generate-prod-networkpolicy
+      match:
+        resources:
+          kinds:
+            - Namespace
+          selector:
+            matchLabels:
+              env: prod
+      generate:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: "np-prod-deny-all"
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        data:
+          apiVersion: networking.k8s.io/v1
+          kind: NetworkPolicy
+          metadata:
+            name: "np-prod-deny-all"
+            labels:
+              created-by: kyverno
+              env: prod
+          spec:
+            podSelector: {}
+            policyTypes:
+              - Ingress
+              - Egress

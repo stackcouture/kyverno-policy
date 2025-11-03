@@ -1,0 +1,25 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-namespace-env-label
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-env-label
+      match:
+        resources:
+          kinds:
+            - Namespace
+      validate:
+        message: "All namespaces must include a valid 'env' label (dev, test, or prod)."
+        anyPattern:
+          - metadata:
+              labels:
+                env: "dev"
+          - metadata:
+              labels:
+                env: "test"
+          - metadata:
+              labels:
+                env: "prod"

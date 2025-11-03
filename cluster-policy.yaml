@@ -1,0 +1,91 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow Latest Tag
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+  - name: require-image-tag
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "An image tag is required."
+      foreach:
+        - list: "request.object.spec.containers"
+          pattern:
+            image: "*:*"
+        - list: "request.object.spec.initContainers"
+          pattern:
+            image: "*:*"
+        - list: "request.object.spec.ephemeralContainers"
+          pattern:
+            image: "*:*"
+  - name: validate-image-tag
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Using a mutable image tag e.g. 'latest' is not allowed."
+      foreach:
+        - list: "request.object.spec.containers"
+          pattern:
+            image: "!*:latest"
+        - list: "request.object.spec.initContainers"
+          pattern:
+            image: "!*:latest"
+        - list: "request.object.spec.ephemeralContainers"
+          pattern:
+            image: "!*:latest"
+  - name: enforce-seccomp-runtime-default
+    match:
+      resources:
+        kinds: ["Pod"]
+    validate:
+      message: "seccompProfile must be RuntimeDefault"
+      pattern:
+        spec:
+          securityContext:
+            seccompProfile:
+              type: "RuntimeDefault"
+
+  - name: enforce-run-as-non-root
+    match:
+      resources:
+        kinds: ["Pod"]
+    validate:
+      message: "Containers must not run as root"
+      pattern:
+        spec:
+          containers:
+            - securityContext:
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+  - name: require-resources 
+    match: 
+      resources: 
+        kinds: ["Pod"] 
+    validate: 
+      message: "CPU and memory requests/limits are required" 
+      pattern: 
+        spec: 
+          containers: 
+          - resources: 
+              requests: 
+                cpu: "?*" 
+                memory: "?*" 
+              limits: 
+                cpu: "?*" 
+                memory: "?*" 

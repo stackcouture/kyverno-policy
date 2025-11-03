@@ -1,0 +1,20 @@
+apiVersion: v1 
+kind: Pod 
+metadata: 
+  name: nginx-pod 
+  labels: 
+    app: nginx  
+spec: 
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers: 
+  - name: nginx 
+    image: nginx:1.15  
+    ports: 
+    - containerPort: 80 
+    securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
