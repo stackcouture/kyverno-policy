@@ -53,6 +53,19 @@ Kyverno defines two main kinds of policies:
 
 ---
 
+### 🧩 validationFailureAction
+
+The `validationFailureAction` field in Kyverno policies determines **how the policy engine reacts when a validation rule fails**.
+
+#### 🔧 Behavior Options
+
+| Value | Behavior |
+|--------|-----------|
+| **enforce** | ❌ Rejects the resource — a **hard block** preventing it from being created or updated. |
+| **audit** | ⚠️ Only reports the violation — a **soft warning**, allowing the resource to be created but logged as non-compliant. |
+
+---
+
 ### 🚀 Learn More
 
 - [Kyverno Official Docs](https://kyverno.io/docs/)
